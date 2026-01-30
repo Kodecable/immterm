@@ -1,4 +1,4 @@
-module immterm
+module github.com/Kodecable/immterm
 
 go 1.25.5
 

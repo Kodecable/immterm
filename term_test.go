@@ -1,9 +1,10 @@
 package immterm_test
 
 import (
-	"immterm"
 	"strings"
 	"testing"
+
+	"github.com/Kodecable/immterm"
 )
 
 func TestVersion(t *testing.T) {
@@ -30,8 +31,8 @@ func splitHistory(buf []byte) []string {
 		return nil
 	}
 	str := string(buf)
-	if strings.HasSuffix(str, "\r\n") {
-		str = strings.TrimSuffix(str, "\r\n")
+	if before, ok := strings.CutSuffix(str, "\r\n"); ok {
+		str = before
 	}
 	return strings.Split(str, "\r\n")
 }

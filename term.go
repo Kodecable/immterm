@@ -2,11 +2,11 @@ package immterm
 
 import (
 	"fmt"
-	"immterm/internal/midterm"
 	"io"
 	"sync"
 
 	"github.com/Kodecable/crosspty"
+	"github.com/Kodecable/immterm/internal/midterm"
 )
 
 var (
