@@ -8,7 +8,7 @@ import (
 )
 
 func TestVersion(t *testing.T) {
-	term, err := immterm.Start(immterm.CommandArg{
+	term, err := immterm.Start(immterm.CommandConfig{
 		Argv: []string{"uname", "-a"},
 	}, immterm.HistoryConfig{})
 	if err != nil {
@@ -38,7 +38,7 @@ func splitHistory(buf []byte) []string {
 }
 
 func TestLongOutput(t *testing.T) {
-	term, err := immterm.Start(immterm.CommandArg{
+	term, err := immterm.Start(immterm.CommandConfig{
 		Argv: []string{"awk", "BEGIN { for(i=1; i<=500; i++) print \"test line \" i}"},
 		Size: immterm.TermSize{
 			Rows: 24,
@@ -76,7 +76,7 @@ func TestLongOutput(t *testing.T) {
 }
 
 func TestLongLongOutput(t *testing.T) {
-	term, err := immterm.Start(immterm.CommandArg{
+	term, err := immterm.Start(immterm.CommandConfig{
 		Argv: []string{"awk", "BEGIN { for(i=1; i<=10240; i++) print \"test line \" i}"},
 		Size: immterm.TermSize{
 			Rows: 24,

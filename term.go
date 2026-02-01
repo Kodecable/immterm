@@ -14,7 +14,8 @@ var (
 	defaultHistoryThreshold = 0.6  // Percentage (0.0 - 1.0)
 )
 
-type CommandArg = crosspty.CommandConfig
+type CommandConfig = crosspty.CommandConfig
+type CloseConfig = crosspty.CloseConfig
 type TermSize = crosspty.TermSize
 
 type FetchResult struct {
@@ -87,14 +88,14 @@ func normalizeHistoryConfig(hc *HistoryConfig) (triggerCount int) {
 	return
 }
 
-func Start(ca CommandArg, hc HistoryConfig) (*Term, error) {
+func Start(cc CommandConfig, hc HistoryConfig) (*Term, error) {
 	triggerCount := normalizeHistoryConfig(&hc)
-	ca, err := crosspty.NormalizeCommandConfig(ca)
+	cc, err := crosspty.NormalizeCommandConfig(cc)
 	if err != nil {
 		return nil, err
 	}
 
-	mterm := midterm.NewTerminal(int(ca.Size.Rows), int(ca.Size.Cols))
+	mterm := midterm.NewTerminal(int(cc.Size.Rows), int(cc.Size.Cols))
 	mterm.Raw = true
 	mterm.CursorVisible = false
 
@@ -110,7 +111,7 @@ func Start(ca CommandArg, hc HistoryConfig) (*Term, error) {
 	}
 	mterm.OnScrollback(t.onScrollback)
 
-	ptmx, err := crosspty.Start(ca)
+	ptmx, err := crosspty.Start(cc)
 	if err != nil {
 		return nil, err
 	}
@@ -133,6 +134,11 @@ func (t *Term) ptmx2mterm() {
 	}()
 
 	_, t.ptmx2mtermErr = io.Copy(t.mterm, t.ptmx)
+}
+
+// Thread-safe.
+func (t *Term) SetCloseConfig(config CloseConfig) (err error) {
+	return t.ptmx.SetCloseConfig(crosspty.CloseConfig(config))
 }
 
 // Thread-safe. safe for re-entry
