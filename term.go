@@ -89,13 +89,20 @@ func normalizeHistoryConfig(hc *HistoryConfig) (triggerCount int) {
 }
 
 func Start(cc CommandConfig, hc HistoryConfig) (*Term, error) {
-	triggerCount := normalizeHistoryConfig(&hc)
 	cc, err := crosspty.NormalizeCommandConfig(cc)
 	if err != nil {
 		return nil, err
 	}
 
-	mterm := midterm.NewTerminal(int(cc.Size.Rows), int(cc.Size.Cols))
+	return StartWithPty(func() (crosspty.Pty, error) {
+		return crosspty.Start(cc)
+	}, cc.Size, hc)
+}
+
+func StartWithPty(getPty func() (crosspty.Pty, error), size TermSize, hc HistoryConfig) (*Term, error) {
+	triggerCount := normalizeHistoryConfig(&hc)
+
+	mterm := midterm.NewTerminal(int(size.Rows), int(size.Cols))
 	mterm.Raw = true
 	mterm.CursorVisible = false
 
@@ -111,7 +118,7 @@ func Start(cc CommandConfig, hc HistoryConfig) (*Term, error) {
 	}
 	mterm.OnScrollback(t.onScrollback)
 
-	ptmx, err := crosspty.Start(cc)
+	ptmx, err := getPty()
 	if err != nil {
 		return nil, err
 	}
